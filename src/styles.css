@@ -101,6 +101,7 @@ main,
 .map-panel,
 .details,
 .directory,
+.comparison,
 .method {
   background: var(--card);
   border: 1px solid var(--line);
@@ -130,6 +131,12 @@ main,
 
 .legend strong { color: var(--ink); font-weight: 700; }
 
+.legend-note {
+  margin: -0.15rem 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .swatch {
   width: 0.9rem;
   height: 0.9rem;
@@ -138,6 +145,7 @@ main,
 }
 
 .swatch-indigenous { background: var(--indigenous); }
+.swatch-scale { width: 2.4rem; }
 .swatch-columbus { background: var(--columbus); }
 .swatch-neither { background: var(--neither); }
 .swatch-not-yet { background: var(--not-yet); }
@@ -158,6 +166,7 @@ main,
 .state-columbus { fill: var(--columbus); }
 .state-neither { fill: var(--neither); }
 .state-not-yet { fill: var(--not-yet); stroke: #b7ab98; }
+.map.is-population .state { stroke: #c9b79a; }
 
 .state:hover,
 .state:focus-visible,
@@ -227,6 +236,7 @@ input[type="range"] {
 
 .milestones button,
 .filters button,
+.view-toggle button,
 .text-button {
   border: 1px solid var(--line);
   background: transparent;
@@ -236,7 +246,8 @@ input[type="range"] {
 }
 
 .milestones button.is-active,
-.filters button.is-active {
+.filters button.is-active,
+.view-toggle button.is-active {
   background: var(--ink);
   color: #fffaf3;
   border-color: var(--ink);
@@ -289,10 +300,42 @@ input[type="range"] {
 .details dt { color: var(--muted); }
 .details dd { margin: 0; }
 
+.view-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.8rem;
+}
+
+.comparison,
 .directory,
 .method {
   margin-top: 1rem;
   padding: 1rem 1rem 1.2rem;
+}
+
+.plot {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 0.4rem;
+}
+
+.plot-grid { stroke: var(--line); stroke-width: 1; }
+.plot-axis,
+.plot-caption { fill: var(--muted); font-size: 12px; }
+.plot-row { fill: var(--ink); font-size: 13px; font-weight: 700; }
+.plot-label { fill: var(--ink); font-size: 11px; font-weight: 700; }
+.plot-dot { stroke: #fffaf3; stroke-width: 1.2; cursor: pointer; }
+.plot-indigenous { fill: var(--indigenous); }
+.plot-columbus { fill: var(--columbus); }
+.plot-neither { fill: var(--neither); }
+.plot-dot.is-selected,
+.plot-dot:hover,
+.plot-dot:focus-visible {
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  outline: none;
 }
 
 .method { margin-bottom: 1rem; }

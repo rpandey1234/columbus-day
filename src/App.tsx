@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { AdoptionTimeline } from "./components/AdoptionTimeline";
 import { Legend } from "./components/Legend";
+import { NativeComparison } from "./components/NativeComparison";
 import { StateDetails } from "./components/StateDetails";
 import { StateList } from "./components/StateList";
 import { StateMap } from "./components/StateMap";
@@ -9,6 +10,8 @@ import {
   dataCurrentAsOf,
   states,
 } from "./data/states";
+import type { MapColoring } from "./lib/population";
+import { formatShare, nativeRank, nativeShare } from "./lib/population";
 import type { DisplayCategory } from "./lib/status";
 import { categoryLabel, displayCategory, officeLabel } from "./lib/status";
 import "./styles.css";
@@ -22,6 +25,12 @@ function formatReviewDate(isoDate: string): string {
   });
 }
 
+const colorings: { id: MapColoring; label: string }[] = [
+  { id: "status", label: "Holiday status" },
+  { id: "adoption", label: "Adoption year" },
+  { id: "population", label: "Native population" },
+];
+
 const emptyCounts: Record<DisplayCategory, number> = {
   indigenous: 0,
   columbus: 0,
@@ -31,6 +40,7 @@ const emptyCounts: Record<DisplayCategory, number> = {
 
 export function App() {
   const [year, setYear] = useState(currentYear);
+  const [coloring, setColoring] = useState<MapColoring>("adoption");
   const [selectedPostal, setSelectedPostal] = useState<string | null>(null);
   const [hoveredPostal, setHoveredPostal] = useState<string | null>(null);
 
@@ -67,7 +77,7 @@ export function App() {
       </a>
       <header className="masthead">
         <p className="eyebrow">Second Monday in October</p>
-        <h1>Columbus Day, by state</h1>
+        <h1>Columbus Day or Indigenous Peoples’ Day</h1>
         <p className="lede">
           Federal law still calls the day Columbus Day. States do not. This map
           shows which ones observe Indigenous Peoples’ Day, Columbus Day only,
@@ -78,10 +88,25 @@ export function App() {
       <main>
         <div className="layout">
           <section className="map-panel" id="state-map" aria-label="State map">
-            <Legend counts={counts} historical={historical} />
+            <div className="view-toggle" role="radiogroup" aria-label="Map coloring">
+              {colorings.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={coloring === option.id}
+                  className={coloring === option.id ? "is-active" : ""}
+                  onClick={() => setColoring(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <Legend counts={counts} historical={historical} coloring={coloring} />
             <StateMap
               statesByFips={statesByFips}
               categoryFor={(state) => displayCategory(state, year)}
+              coloring={coloring}
               selectedPostal={selectedPostal}
               onSelect={setSelectedPostal}
               onHover={setHoveredPostal}
@@ -93,6 +118,9 @@ export function App() {
                   {categoryLabel(displayCategory(preview, year))}.{" "}
                   {preview.category === "indigenous" && preview.firstObservedYear
                     ? `First observed ${preview.firstObservedYear}. `
+                    : ""}
+                  {coloring === "population"
+                    ? `${formatShare(nativeShare(preview.postal))}% Native population, rank ${nativeRank(preview.postal)} of 50. `
                     : ""}
                   {officeLabel(preview.officesClosed)}.
                 </>
@@ -108,6 +136,13 @@ export function App() {
           </section>
           <StateDetails state={selected} year={year} />
         </div>
+        <NativeComparison
+          states={states}
+          activePostal={previewPostal}
+          selectedPostal={selectedPostal}
+          onSelect={setSelectedPostal}
+          onHover={setHoveredPostal}
+        />
         <StateList
           states={states}
           selectedPostal={selectedPostal}
@@ -138,6 +173,15 @@ export function App() {
             presidential proclamation — are context. They are not state
             adoptions. District of Columbia and U.S. territories are outside
             this map.
+          </p>
+          <p>
+            The population comparison uses the 2020 Census Bureau estimate of
+            people identifying as American Indian and Alaska Native alone, as a
+            share of each state’s population. It records self-identified race,
+            not tribal enrollment. Among the factors examined, this share is the
+            strongest association with whether a state gives the Monday an
+            Indigenous name. It is not a cause: several high-share states do
+            not, and several low-share states do.
           </p>
         </section>
       </main>

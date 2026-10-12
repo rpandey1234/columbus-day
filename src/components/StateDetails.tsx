@@ -1,5 +1,11 @@
 import type { StateRecord } from "../data/states";
 import { currentYear } from "../data/states";
+import {
+  formatShare,
+  nativeRank,
+  nativeShare,
+  populationReading,
+} from "../lib/population";
 import { categoryLabel, displayCategory, officeLabel } from "../lib/status";
 
 type StateDetailsProps = {
@@ -22,6 +28,8 @@ export function StateDetails({ state, year }: StateDetailsProps) {
 
   const shown = displayCategory(state, year);
   const yearKnown = state.firstObservedYear !== null;
+  const share = nativeShare(state.postal);
+  const reading = populationReading(state.category, share);
 
   return (
     <aside className="details" aria-live="polite">
@@ -47,6 +55,12 @@ export function StateDetails({ state, year }: StateDetailsProps) {
           <dt>State offices</dt>
           <dd>{officeLabel(state.officesClosed)}</dd>
         </div>
+        <div>
+          <dt>Native population</dt>
+          <dd>
+            {formatShare(share)}%, rank {nativeRank(state.postal)} of 50
+          </dd>
+        </div>
         {state.category === "indigenous" ? (
           <>
             <div>
@@ -60,6 +74,7 @@ export function StateDetails({ state, year }: StateDetailsProps) {
           </>
         ) : null}
       </dl>
+      {reading ? <p className="quiet">{reading}</p> : null}
       {year < currentYear && shown === "not-yet" ? (
         <p className="quiet">
           {yearKnown
