@@ -40,7 +40,7 @@ const emptyCounts: Record<DisplayCategory, number> = {
 
 export function App() {
   const [year, setYear] = useState(currentYear);
-  const [coloring, setColoring] = useState<MapColoring>("adoption");
+  const [coloring, setColoring] = useState<MapColoring>("status");
   const [selectedPostal, setSelectedPostal] = useState<string | null>(null);
   const [hoveredPostal, setHoveredPostal] = useState<string | null>(null);
 
